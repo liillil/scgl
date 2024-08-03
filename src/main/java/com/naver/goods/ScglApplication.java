@@ -1,4 +1,4 @@
-package com.example.scgl;
+package com.naver.goods;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
