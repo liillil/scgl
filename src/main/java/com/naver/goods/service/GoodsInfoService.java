@@ -100,12 +100,12 @@ public class GoodsInfoService {
     }
 
     private void updateGoodsInfo(String goodsNo, String updateParams) throws Exception {
-        OkHttpClient client = HttpUtils.getUnsafeOkHttpClient();
+//        OkHttpClient client = HttpUtils.getUnsafeOkHttpClient();
         String crefToken = crefToken();
         if (StringUtils.isBlank(crefToken)) {
             return;
         }
-        MediaType mediaType = MediaType.parse("application/json");
+//        MediaType mediaType = MediaType.parse("application/json");
 
         String productUrl = CommonConstants.PRODUCT_URL + goodsNo;
 //        RequestBody body = RequestBody.create(mediaType, updateParams);
@@ -116,8 +116,10 @@ public class GoodsInfoService {
 //                .addHeader("content-type", "application/json")
 //                .build();
         try {
+            Map<String,String> headers = new HashMap<>();
+            headers.put("Authorization","Bearer "+crefToken);
 //            Response response = client.newCall(request).execute();
-            String resp = HttpUtils.httpPostWithJson(productUrl,updateParams, 30000, 30000);
+            String resp = HttpUtils.httpPutWithJson(productUrl,updateParams, headers,30000, 30000);
             log.info(">>>>更新价格返回：{}，goodsNo:{}",resp,goodsNo);
 
         } catch (Exception e) {

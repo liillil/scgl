@@ -300,7 +300,7 @@ public class HttpUtils {
         }
     }
 
-    public static String httpPutWithJson(String url, String json, Integer connTimeout, Integer readTimeout) {
+    public static String httpPutWithJson(String url, String json,Map<String,String> headers, Integer connTimeout, Integer readTimeout) {
         String returnValue = "";
         CloseableHttpClient httpClient = HttpClients.createDefault();
         ResponseHandler<String> responseHandler = new BasicResponseHandler();
@@ -315,6 +315,11 @@ public class HttpUtils {
             StringEntity requestEntity = new StringEntity(json,"utf-8");
             requestEntity.setContentEncoding("UTF-8");
             httpPut.setHeader("Content-type", "application/json");
+            if(headers !=null && headers.size()>0){
+                for (String key:headers.keySet())
+                httpPut.setHeader(key,headers.get(key));
+            }
+
             setMDC(httpPut);
             httpPut.setEntity(requestEntity);
 
