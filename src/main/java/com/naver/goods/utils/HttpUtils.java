@@ -300,7 +300,7 @@ public class HttpUtils {
         }
     }
 
-    public static String httpPostWithJson(String url, String json, Integer connTimeout, Integer readTimeout) {
+    public static String httpPutWithJson(String url, String json, Integer connTimeout, Integer readTimeout) {
         String returnValue = "";
         CloseableHttpClient httpClient = HttpClients.createDefault();
         ResponseHandler<String> responseHandler = new BasicResponseHandler();
@@ -309,14 +309,14 @@ public class HttpUtils {
             httpClient = HttpClients.createDefault();
 
             //第二步：创建httpPost对象
-            HttpPost httpPost = new HttpPost(url);
+            HttpPut httpPut = new HttpPut(url);
 
             //第三步：给httpPost设置JSON格式的参数
             StringEntity requestEntity = new StringEntity(json,"utf-8");
             requestEntity.setContentEncoding("UTF-8");
-            httpPost.setHeader("Content-type", "application/json");
-            setMDC(httpPost);
-            httpPost.setEntity(requestEntity);
+            httpPut.setHeader("Content-type", "application/json");
+            setMDC(httpPut);
+            httpPut.setEntity(requestEntity);
 
             Builder customReqConf = RequestConfig.custom();
             if (connTimeout != null) {
@@ -325,10 +325,10 @@ public class HttpUtils {
             if (readTimeout != null) {
                 customReqConf.setSocketTimeout(readTimeout);
             }
-            httpPost.setConfig(customReqConf.build());
+            httpPut.setConfig(customReqConf.build());
 
             //第四步：发送HttpPost请求，获取返回值
-            returnValue = httpClient.execute(httpPost,responseHandler); //调接口获取返回值时，必须用此方法
+            returnValue = httpClient.execute(httpPut,responseHandler); //调接口获取返回值时，必须用此方法
         } catch(Exception e) {
             log.error("HttpPostWithJson error url" + url+ ";请求参数: " + json + ";Exception: " + e);
         }finally {
