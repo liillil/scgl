@@ -427,12 +427,12 @@ public class HttpUtils {
             //第四步：发送HttpPost请求，获取返回值
             returnValue = httpClient.execute(httpPut,responseHandler); //调接口获取返回值时，必须用此方法
         } catch(Exception e) {
-            log.error("HttpPostWithJson error url" + url+ ";请求参数: " + json + ";Exception: " + e);
+            log.error("HttpPutWithJson error url" + url+ ";请求参数: " + json + ";Exception: " + e);
         }finally {
             try {
                 httpClient.close();
             } catch (IOException e) {
-                log.error("HttpPostWithJson close error",e);
+                log.error("HttpPutWithJson close error",e);
             }
         }
         //第五步：处理返回值

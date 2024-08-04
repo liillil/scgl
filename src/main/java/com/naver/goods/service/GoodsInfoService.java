@@ -102,6 +102,7 @@ public class GoodsInfoService {
     private void updateGoodsInfo(String goodsNo, String updateParams) throws Exception {
 //        OkHttpClient client = HttpUtils.getUnsafeOkHttpClient();
         String crefToken = crefToken();
+        log.info("crefToken:{}", crefToken);
         if (StringUtils.isBlank(crefToken)) {
             return;
         }
