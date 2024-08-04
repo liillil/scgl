@@ -20,3 +20,12 @@ spring:
         min-idle: 0
         # 连接池中最大连接数，负数表示没有限制
         max-active: 20
+  datasource:
+    username: root
+    password: 123456
+    #?serverTimezone=UTC解决时区的报错
+    url: jdbc:mysql://127.0.0.1:3306/naver_store?serverTimezone=UTC&useUnicode=true&characterEncoding=utf-8
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  mybatis:
+    type-aliases-package: com.naver.goods.entity # 给pojo实体类起别名
+    mapper-locations: classpath:mybatis/mapper/*.xml

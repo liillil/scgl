@@ -20,7 +20,7 @@ public class CrawlerService {
             String crawUrl = CommonConstants.CRAW_URL + comGoodsId;
             Document document = HttpUtils.rawDataHomePage(crawUrl);
             Element priceElement = document.getElementsByClass(CommonConstants.CRAW_PRICE_LABEL).first();
-            Element comStoreNameElement = document.getElementsByClass(CommonConstants.CRAW_GOODS_NAME_LABEL).first();
+            Element comStoreNameElement = document.getElementsByClass(CommonConstants.CRAW_GOODS_NAME_LABEL).get(1);
             if (comStoreNameElement != null) {
                 String comStoreName = comStoreNameElement.text();
                 crawlerGoodsInfo.setComStoreName(comStoreName);
