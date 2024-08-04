@@ -1,5 +1,6 @@
 package com.naver.goods.utils;
 
+import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 import org.apache.commons.httpclient.ConnectTimeoutException;
@@ -13,6 +14,10 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLContextBuilder;
 import org.apache.http.conn.ssl.TrustStrategy;
@@ -23,6 +28,9 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
+import org.jsoup.Connection;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.slf4j.MDC;
 import org.apache.http.client.config.RequestConfig.Builder;
 
@@ -31,6 +39,8 @@ import javax.net.ssl.*;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.security.GeneralSecurityException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -300,26 +310,108 @@ public class HttpUtils {
         }
     }
 
+    private static void initUnSecureTSL() {
+        // 创建信任管理器(不验证证书)
+        final TrustManager[] trustAllCerts = new TrustManager[]{
+                new X509TrustManager() {
+                    //检查客户端证书
+                    public void checkClientTrusted(final X509Certificate[] chain, final String authType) {
+                        //do nothing 接受任意客户端证书
+                    }
+
+                    //检查服务器端证书
+                    public void checkServerTrusted(final X509Certificate[] chain, final String authType) {
+                        //do nothing 接受任意服务端证书
+                    }
+
+                    //返回受信任的X509证书
+                    public X509Certificate[] getAcceptedIssuers() {
+                        return null;
+                    }
+                }
+        };
+        try {
+            // 创建SSLContext对象，并使用指定的信任管理器初始化
+            SSLContext sslContext = SSLContext.getInstance("SSL");
+            sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+            //基于信任管理器，创建套接字工厂
+            SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
+            //为HttpsURLConnection配置套接字工厂
+            HttpsURLConnection.setDefaultSSLSocketFactory(sslSocketFactory);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public static Document rawDataHomePage(String url) {
+        try {
+            initUnSecureTSL();
+            Document document = Jsoup.connect(url).get();
+            return document;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static SSLContext createIgnoreVerifySSL() throws NoSuchAlgorithmException, KeyManagementException {
+        SSLContext sc = SSLContext.getInstance("SSLv3");
+
+        // 实现一个X509TrustManager接口，用于绕过验证，不用修改里面的方法
+        X509TrustManager trustManager = new X509TrustManager() {
+            @Override
+            public void checkClientTrusted(
+                    java.security.cert.X509Certificate[] paramArrayOfX509Certificate,
+                    String paramString) throws CertificateException {
+            }
+
+            @Override
+            public void checkServerTrusted(
+                    java.security.cert.X509Certificate[] paramArrayOfX509Certificate,
+                    String paramString) throws CertificateException {
+            }
+
+            @Override
+            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                return null;
+            }
+        };
+
+        sc.init(null, new TrustManager[] { trustManager }, null);
+        return sc;
+    }
     public static String httpPutWithJson(String url, String json,Map<String,String> headers, Integer connTimeout, Integer readTimeout) {
         String returnValue = "";
-        CloseableHttpClient httpClient = HttpClients.createDefault();
+        CloseableHttpClient httpClient = null;
         ResponseHandler<String> responseHandler = new BasicResponseHandler();
-        try{
-            //第一步：创建HttpClient对象
-            httpClient = HttpClients.createDefault();
+        try { SSLContext sslcontext = createIgnoreVerifySSL();
+
+            //设置协议http和https对应的处理socket链接工厂的对象
+            Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
+                    .register("http", PlainConnectionSocketFactory.INSTANCE)
+                    .register("https", new SSLConnectionSocketFactory(sslcontext))
+                    .build();
+            PoolingHttpClientConnectionManager connManager = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
+            HttpClients.custom().setConnectionManager(connManager);
+
+
+            //创建自定义的httpclient对象
+            httpClient = HttpClients.custom().setConnectionManager(connManager).build();
+
 
             //第二步：创建httpPost对象
-            HttpPut httpPut = new HttpPut(url);
+            HttpPut httpPut= new HttpPut(url);
 
             //第三步：给httpPost设置JSON格式的参数
             StringEntity requestEntity = new StringEntity(json,"utf-8");
             requestEntity.setContentEncoding("UTF-8");
             httpPut.setHeader("Content-type", "application/json");
-            if(headers !=null && headers.size()>0){
-                for (String key:headers.keySet())
-                httpPut.setHeader(key,headers.get(key));
+            if (headers !=null && headers.size()>0){
+                for (String key:headers.keySet()){
+                    httpPut.setHeader(key,headers.get(key));
+                }
             }
-
             setMDC(httpPut);
             httpPut.setEntity(requestEntity);
 

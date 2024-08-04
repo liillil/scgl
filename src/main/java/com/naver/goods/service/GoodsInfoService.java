@@ -76,7 +76,7 @@ public class GoodsInfoService {
             if (diffPrice == 0) {
                 updateDiscountPrice = goodsPrice - 10;
             } else {
-                updateDiscountPrice = goodsPrice - discountPrice - 10;
+                updateDiscountPrice = goodsPrice - diffPrice - 10;
             }
 
             // 使用Jackson的ObjectMapper解析JSON字符串

@@ -2,6 +2,7 @@ package com.naver.goods.service;
 
 import com.naver.goods.common.CommonConstants;
 import com.naver.goods.entity.CrawlerGoodsInfo;
+import com.naver.goods.utils.HttpUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
@@ -17,7 +18,7 @@ public class CrawlerService {
         CrawlerGoodsInfo crawlerGoodsInfo = new CrawlerGoodsInfo();
         try {
             String crawUrl = CommonConstants.CRAW_URL + comGoodsId;
-            Document document = Jsoup.connect(crawUrl).get();
+            Document document = HttpUtils.rawDataHomePage(crawUrl);
             Element priceElement = document.getElementsByClass(CommonConstants.CRAW_PRICE_LABEL).first();
             Element comStoreNameElement = document.getElementsByClass(CommonConstants.CRAW_GOODS_NAME_LABEL).first();
             if (comStoreNameElement != null) {
@@ -30,7 +31,7 @@ public class CrawlerService {
             if (priceElement != null) {
                 String price = priceElement.text();
                 if(StringUtils.isNotEmpty(price)) {
-                    crawlerGoodsInfo.setPrice(Integer.valueOf(price));
+                    crawlerGoodsInfo.setPrice(Integer.valueOf(price.replace(",","")));
                     System.out.println("商品价格: " + price);
                 }
             } else {
