@@ -108,21 +108,20 @@ public class GoodsInfoService {
         MediaType mediaType = MediaType.parse("application/json");
 
         String productUrl = CommonConstants.PRODUCT_URL + goodsNo;
-        RequestBody body = RequestBody.create(mediaType, updateParams);
-        Request request = new Request.Builder()
-                .url(productUrl)
-                .put(body)
-                .addHeader("Authorization", "Bearer "+crefToken)
-                .addHeader("content-type", "application/json")
-                .build();
-
+//        RequestBody body = RequestBody.create(mediaType, updateParams);
+//        Request request = new Request.Builder()
+//                .url(productUrl)
+//                .put(body)
+//                .addHeader("Authorization", "Bearer "+crefToken)
+//                .addHeader("content-type", "application/json")
+//                .build();
         try {
-            Response response = client.newCall(request).execute();
-            if(response.code() == 200){
-                log.info(">>>>更新价格成功！goodsNo:{}",goodsNo);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+//            Response response = client.newCall(request).execute();
+            String resp = HttpUtils.httpPostWithJson(productUrl,updateParams, 30000, 30000);
+            log.info(">>>>更新价格返回：{}，goodsNo:{}",resp,goodsNo);
+
+        } catch (Exception e) {
+           log.error(">>>>updateGoodsInfo error msg:{}",e);
         }
     }
 

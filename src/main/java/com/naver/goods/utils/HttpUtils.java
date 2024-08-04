@@ -1,10 +1,12 @@
 package com.naver.goods.utils;
 
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 import org.apache.commons.httpclient.ConnectTimeoutException;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Consts;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
@@ -15,6 +17,8 @@ import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLContextBuilder;
 import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.conn.ssl.X509HostnameVerifier;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
@@ -40,6 +44,7 @@ import java.util.Set;
  * @Author: lg
  * @Date: 2024/8/3 23:07
  */
+@Slf4j
 public class HttpUtils {
     static CloseableHttpClient client = null;
     static {
@@ -293,5 +298,47 @@ public class HttpUtils {
         } catch (GeneralSecurityException e) {
             throw e;
         }
+    }
+
+    public static String httpPostWithJson(String url, String json, Integer connTimeout, Integer readTimeout) {
+        String returnValue = "";
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        ResponseHandler<String> responseHandler = new BasicResponseHandler();
+        try{
+            //第一步：创建HttpClient对象
+            httpClient = HttpClients.createDefault();
+
+            //第二步：创建httpPost对象
+            HttpPost httpPost = new HttpPost(url);
+
+            //第三步：给httpPost设置JSON格式的参数
+            StringEntity requestEntity = new StringEntity(json,"utf-8");
+            requestEntity.setContentEncoding("UTF-8");
+            httpPost.setHeader("Content-type", "application/json");
+            setMDC(httpPost);
+            httpPost.setEntity(requestEntity);
+
+            Builder customReqConf = RequestConfig.custom();
+            if (connTimeout != null) {
+                customReqConf.setConnectTimeout(connTimeout);
+            }
+            if (readTimeout != null) {
+                customReqConf.setSocketTimeout(readTimeout);
+            }
+            httpPost.setConfig(customReqConf.build());
+
+            //第四步：发送HttpPost请求，获取返回值
+            returnValue = httpClient.execute(httpPost,responseHandler); //调接口获取返回值时，必须用此方法
+        } catch(Exception e) {
+            log.error("HttpPostWithJson error url" + url+ ";请求参数: " + json + ";Exception: " + e);
+        }finally {
+            try {
+                httpClient.close();
+            } catch (IOException e) {
+                log.error("HttpPostWithJson close error",e);
+            }
+        }
+        //第五步：处理返回值
+        return returnValue;
     }
 }
