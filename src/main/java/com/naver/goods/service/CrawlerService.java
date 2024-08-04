@@ -30,7 +30,7 @@ public class CrawlerService {
             if (priceElement != null) {
                 String price = priceElement.text();
                 if(StringUtils.isNotEmpty(price)) {
-                    crawlerGoodsInfo.setPrice(Integer.valueOf(price));
+                    crawlerGoodsInfo.setPrice(Integer.valueOf(price.replace(",", "")));
                     System.out.println("商品价格: " + price);
                 }
             } else {
