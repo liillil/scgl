@@ -22,7 +22,7 @@ public class SchedulingTaskService {
     /**
      * 定时比价
      */
-    @Scheduled(cron = "0/5 * * * * *")
+    @Scheduled(cron = "* 0/20 * * * *")
     private void scheduledPriceParity() throws Exception {
         goodsInfoService.oprGoodsInfo("10574690710","47446055679","패션 핫이슈");
         log.info(">>>>1");
