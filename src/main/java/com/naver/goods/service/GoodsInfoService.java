@@ -54,48 +54,50 @@ public class GoodsInfoService {
     }
 
     public void oprGoodsInfo(String goodsNo, String comGoodsId, String storeName) throws Exception {
-        String goodsInfo = getGoodsInfoByGoodsNo(goodsNo);
+        try {
+            String goodsInfo = getGoodsInfoByGoodsNo(goodsNo);
 
-        JSONObject gooodInfoJson = JSONObject.parseObject(goodsInfo);
-        if(gooodInfoJson !=null && gooodInfoJson.containsKey("originProduct")) {
-            JSONObject productJson = gooodInfoJson.getJSONObject("originProduct");
-            Integer goodsPrice = productJson.getInteger("salePrice");
+            JSONObject gooodInfoJson = JSONObject.parseObject(goodsInfo);
+            if(gooodInfoJson !=null && gooodInfoJson.containsKey("originProduct")) {
+                JSONObject productJson = gooodInfoJson.getJSONObject("originProduct");
+                Integer goodsPrice = productJson.getInteger("salePrice");
 
-            JSONObject customerBenefitJson = productJson.getJSONObject("customerBenefit");
-            JSONObject discountPolicyJson = customerBenefitJson.getJSONObject("immediateDiscountPolicy");
-            JSONObject discountMethodJson = discountPolicyJson.getJSONObject("discountMethod");
-            Integer discountPrice = discountMethodJson.getInteger("value");
-            Integer goodsDiscountPrice = goodsPrice - discountPrice;
+                JSONObject customerBenefitJson = productJson.getJSONObject("customerBenefit");
+                JSONObject discountPolicyJson = customerBenefitJson.getJSONObject("immediateDiscountPolicy");
+                JSONObject discountMethodJson = discountPolicyJson.getJSONObject("discountMethod");
+                Integer discountPrice = discountMethodJson.getInteger("value");
+                Integer goodsDiscountPrice = goodsPrice - discountPrice;
 
-            CrawlerGoodsInfo crawlerGoodsInfo = crawlerService.crawlerGoodsInfo(comGoodsId);
-            if (StringUtils.equals(crawlerGoodsInfo.getComStoreName(), storeName)) {
-                return;
-            }
-            Integer updateDiscountPrice;
-            Integer diffPrice = goodsDiscountPrice - crawlerGoodsInfo.getPrice();
-            if (diffPrice == 0) {
-                updateDiscountPrice = goodsPrice - 10;
-            } else {
-                updateDiscountPrice = goodsPrice - diffPrice - 10;
-            }
-
-            // 使用Jackson的ObjectMapper解析JSON字符串
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode jsonNode = null;
-
-            try {
-                jsonNode = mapper.readTree(goodsInfo);
-                JsonNode outerNode = jsonNode.path("originProduct");
-                if (outerNode.isObject()) {
-                    ObjectNode objectNode = (ObjectNode) outerNode;
-                    objectNode.put("salePrice", updateDiscountPrice); // 修改嵌套对象的值
-
-                    goodsInfo = mapper.writeValueAsString(jsonNode);
+                CrawlerGoodsInfo crawlerGoodsInfo = crawlerService.crawlerGoodsInfo(comGoodsId);
+                if (StringUtils.equals(crawlerGoodsInfo.getComStoreName(), storeName)) {
+                    return;
                 }
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
+                Integer updateDiscountPrice;
+                Integer diffPrice = goodsDiscountPrice - crawlerGoodsInfo.getPrice();
+                if (diffPrice == 0) {
+                    updateDiscountPrice = goodsPrice - 10;
+                } else {
+                    updateDiscountPrice = goodsPrice - diffPrice - 10;
+                }
+
+                // 使用Jackson的ObjectMapper解析JSON字符串
+                ObjectMapper mapper = new ObjectMapper();
+                JsonNode jsonNode = null;
+
+
+                    jsonNode = mapper.readTree(goodsInfo);
+                    JsonNode outerNode = jsonNode.path("originProduct");
+                    if (outerNode.isObject()) {
+                        ObjectNode objectNode = (ObjectNode) outerNode;
+                        objectNode.put("salePrice", updateDiscountPrice); // 修改嵌套对象的值
+
+                        goodsInfo = mapper.writeValueAsString(jsonNode);
+                    }
+
+                this.updateGoodsInfo(goodsNo, goodsInfo);
             }
-            this.updateGoodsInfo(goodsNo, goodsInfo);
+        } catch (Exception e) {
+            log.error(">>>>error msg:{}",e);
         }
     }
 
