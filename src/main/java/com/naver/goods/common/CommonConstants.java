@@ -21,7 +21,7 @@ public class CommonConstants {
     public final static String CREF_TOKEN_URL = "https://api.commerce.naver.com/external/v1/oauth2/token";
 
     //账户ID
-    public final static String ACCOUNT_ID = "account_id";
+    public final static String ACCOUNT_ID = "ncp_1owpob_01";
 
     //产品维护
     public final static String PRODUCT_URL = "https://api.commerce.naver.com/external/v2/products/channel-products/";
