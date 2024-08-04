@@ -426,6 +426,7 @@ public class HttpUtils {
 
             //第四步：发送HttpPost请求，获取返回值
             returnValue = httpClient.execute(httpPut,responseHandler); //调接口获取返回值时，必须用此方法
+            log.info(">>> returnValue:{}",returnValue);
         } catch(Exception e) {
             log.error("HttpPutWithJson error url" + url+ ";请求参数: " + json + ";Exception: " + e);
         }finally {
