@@ -385,20 +385,23 @@ public class HttpUtils {
         String returnValue = "";
         CloseableHttpClient httpClient = null;
         ResponseHandler<String> responseHandler = new BasicResponseHandler();
-        try { SSLContext sslcontext = createIgnoreVerifySSL();
+        try {
+//            SSLContext sslcontext = createIgnoreVerifySSL();
+//
+//            //设置协议http和https对应的处理socket链接工厂的对象
+//            Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
+//                    .register("http", PlainConnectionSocketFactory.INSTANCE)
+//                    .register("https", new SSLConnectionSocketFactory(sslcontext))
+//                    .build();
+//            PoolingHttpClientConnectionManager connManager = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
+//            HttpClients.custom().setConnectionManager(connManager);
+//
+//
+//            //创建自定义的httpclient对象
+//            httpClient = HttpClients.custom().setConnectionManager(connManager).build();
 
-            //设置协议http和https对应的处理socket链接工厂的对象
-            Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
-                    .register("http", PlainConnectionSocketFactory.INSTANCE)
-                    .register("https", new SSLConnectionSocketFactory(sslcontext))
-                    .build();
-            PoolingHttpClientConnectionManager connManager = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
-            HttpClients.custom().setConnectionManager(connManager);
-
-
-            //创建自定义的httpclient对象
-            httpClient = HttpClients.custom().setConnectionManager(connManager).build();
-
+            //第一步：创建HttpClient对象
+            httpClient = HttpClients.createDefault();
 
             //第二步：创建httpPost对象
             HttpPut httpPut= new HttpPut(url);

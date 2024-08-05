@@ -122,7 +122,7 @@ public class GoodsInfoService {
             Map<String,String> headers = new HashMap<>();
             headers.put("Authorization","Bearer "+crefToken);
 //            Response response = client.newCall(request).execute();
-            String resp = HttpUtils.httpPutWithJson(productUrl,updateParams, headers,30000, 30000);
+            String resp = HttpUtils.httpPutWithJson(productUrl,updateParams, headers,300000, 300000);
             log.info(">>>>更新价格返回：{}，goodsNo:{}",resp,goodsNo);
 
         } catch (Exception e) {
@@ -161,7 +161,7 @@ public class GoodsInfoService {
                     jsonObject = JSONObject.parseObject(response);
                     log.info(">>>>crefToken response:{}",response);
                 if (jsonObject != null && jsonObject.containsKey("access_token")) {
-                    redisUtil.set(CommonConstants.CLIENT_ID+"_token",jsonObject.getString("access_token"),1800);
+                    redisUtil.set(CommonConstants.CLIENT_ID+"_token",jsonObject.getString("access_token"),1500);
                     return jsonObject.getString("access_token");
                 }
             }
