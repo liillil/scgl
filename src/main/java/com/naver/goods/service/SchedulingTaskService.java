@@ -33,6 +33,12 @@ public class SchedulingTaskService {
         map.put("10675560209","49207426792");
         map.put("10683874474","41757465114");
         map.put("10683981714","47910304236");
+        map.put("10683923486","48745111622");
+        map.put("10684282951","36992856412");
+        map.put("10690868289","48279706519");
+        map.put("10684183300","49231576755");
+        map.put("10691122185","42922406763");
+        map.put("10680545463","48121274533");
         for (String key:map.keySet()) {
             goodsInfoService.oprGoodsInfo(key, map.get(key), storeName);
         }
