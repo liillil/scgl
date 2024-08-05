@@ -30,6 +30,6 @@ spring:
     type-aliases-package: com.naver.goods.entity # 给pojo实体类起别名
     mapper-locations: classpath:mybatis/mapper/*.xml
 logback:
-  logdir: E:\\java\\log\\
+  logdir: D:\\java\\log\\
   maxHistory: 7
   level: INFO
