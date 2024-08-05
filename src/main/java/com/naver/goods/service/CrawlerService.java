@@ -13,7 +13,11 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 public class CrawlerService {
-
+    /**
+     * 爬取页面商品价格最低店铺名称和金额
+     * @param comGoodsId
+     * @return
+     */
     public CrawlerGoodsInfo crawlerGoodsInfo(String comGoodsId){
         CrawlerGoodsInfo crawlerGoodsInfo = new CrawlerGoodsInfo();
         try {
@@ -38,15 +42,9 @@ public class CrawlerService {
                 log.info("未找到商品价格");
             }
         } catch (Exception e) {
-//            e.printStackTrace();
-            log.info(">>>>>error msg:{}",e);
+            log.info(">>>>>爬取页面商品价格最低店铺名称和金额异常，error msg:{}",e);
             return null;
         }
         return crawlerGoodsInfo;
-    }
-
-    public static void main(String[] args) {
-        CrawlerService crawlerService = new CrawlerService();
-        crawlerService.crawlerGoodsInfo("47446055679");
     }
 }

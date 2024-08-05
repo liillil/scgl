@@ -29,36 +29,44 @@ public class GoodsInfoService {
     @Autowired
     private CrawlerService crawlerService;
 
+    /**
+     * 查询商品信息
+     *
+     * @param goodsNo 商品id
+     * @return
+     * @throws Exception
+     */
     private String getGoodsInfoByGoodsNo(String goodsNo) throws Exception {
-        OkHttpClient client = HttpUtils.getUnsafeOkHttpClient();
         String crefToken = crefToken();
         if (StringUtils.isBlank(crefToken)) {
             return null;
         }
-        String  goodsInfo = null;
+        String goodsInfo = null;
         try {
-        String productNoUrl = CommonConstants.PRODUCT_URL + goodsNo;
-//        Request request = new Request.Builder()
-//                .url(productNoUrl)
-//                .get()
-//                .addHeader("Authorization", crefToken)
-//                .build();
-            Map<String,String> headers = new HashMap<>();
-            headers.put("Authorization","Bearer "+crefToken);
-            goodsInfo = HttpUtils.getForm(productNoUrl,headers,30000,30000);
-//            log.info(">>>>getGoodsInfoByGoodsNo response:{}",goodsInfo);
+            String productNoUrl = CommonConstants.PRODUCT_URL + goodsNo;
+            Map<String, String> headers = new HashMap<>();
+            headers.put("Authorization", "Bearer " + crefToken);
+            goodsInfo = HttpUtils.getForm(productNoUrl, headers, 30000, 30000);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         return goodsInfo;
     }
 
+    /**
+     * 比较并修改商品至最低价格
+     *
+     * @param goodsNo    商品id
+     * @param comGoodsId 比价id
+     * @param storeName  店铺名称
+     * @throws Exception
+     */
     public void oprGoodsInfo(String goodsNo, String comGoodsId, String storeName) throws Exception {
         try {
             String goodsInfo = getGoodsInfoByGoodsNo(goodsNo);
 
             JSONObject gooodInfoJson = JSONObject.parseObject(goodsInfo);
-            if(gooodInfoJson !=null && gooodInfoJson.containsKey("originProduct")) {
+            if (gooodInfoJson != null && gooodInfoJson.containsKey("originProduct")) {
                 JSONObject productJson = gooodInfoJson.getJSONObject("originProduct");
                 Integer goodsPrice = productJson.getInteger("salePrice");
 
@@ -83,91 +91,89 @@ public class GoodsInfoService {
                 // 使用Jackson的ObjectMapper解析JSON字符串
                 ObjectMapper mapper = new ObjectMapper();
                 JsonNode jsonNode;
-
-
-                    jsonNode = mapper.readTree(goodsInfo);
-                    JsonNode outerNode = jsonNode.path("originProduct");
-                    if (outerNode.isObject()) {
-                        ObjectNode objectNode = (ObjectNode) outerNode;
-                        objectNode.put("salePrice", updateDiscountPrice); // 修改嵌套对象的值
-
-                        goodsInfo = mapper.writeValueAsString(jsonNode);
-                    }
-
+                jsonNode = mapper.readTree(goodsInfo);
+                JsonNode outerNode = jsonNode.path("originProduct");
+                if (outerNode.isObject()) {
+                    ObjectNode objectNode = (ObjectNode) outerNode;
+                    objectNode.put("salePrice", updateDiscountPrice); // 修改嵌套对象的值
+                    goodsInfo = mapper.writeValueAsString(jsonNode);
+                }
                 this.updateGoodsInfo(goodsNo, goodsInfo);
             }
         } catch (Exception e) {
-            log.error(">>>>error msg:{}",e);
+            log.error(">>>>比较并修改商品至最低价格异常，error msg:{}", e);
         }
     }
 
+    /**
+     * 更新商品价格
+     *
+     * @param goodsNo      商品id
+     * @param updateParams 商品详情
+     * @throws Exception
+     */
     private void updateGoodsInfo(String goodsNo, String updateParams) throws Exception {
-//        OkHttpClient client = HttpUtils.getUnsafeOkHttpClient();
         String crefToken = crefToken();
-        log.info("crefToken:{}", crefToken);
         if (StringUtils.isBlank(crefToken)) {
             return;
         }
-//        MediaType mediaType = MediaType.parse("application/json");
-
         String productUrl = CommonConstants.PRODUCT_URL + goodsNo;
-//        RequestBody body = RequestBody.create(mediaType, updateParams);
-//        Request request = new Request.Builder()
-//                .url(productUrl)
-//                .put(body)
-//                .addHeader("Authorization", "Bearer "+crefToken)
-//                .addHeader("content-type", "application/json")
-//                .build();
         try {
-            Map<String,String> headers = new HashMap<>();
-            headers.put("Authorization","Bearer "+crefToken);
-//            Response response = client.newCall(request).execute();
-            String resp = HttpUtils.httpPutWithJson(productUrl,updateParams, headers,300000, 300000);
-            log.info(">>>>更新价格返回：{}，商品id:{}",resp,goodsNo);
-
+            Map<String, String> headers = new HashMap<>();
+            headers.put("Authorization", "Bearer " + crefToken);
+            String resp = HttpUtils.httpPutWithJson(productUrl, updateParams, headers, 300000, 300000);
+            log.info(">>>>更新价格返回：{}，商品id:{}", resp, goodsNo);
         } catch (Exception e) {
-           log.error(">>>>updateGoodsInfo error msg:{}",e);
+            log.error(">>>>更新商品价格异常，error msg:{}", e);
         }
     }
 
-    private String crefToken() throws Exception {
-        Object o = redisUtil.get(CommonConstants.CLIENT_ID+"_token");
+    /**
+     * 获取패션 핫이슈店铺 token
+     *
+     * @return
+     * @throws Exception
+     */
+    private String crefToken(){
+        return crefToken(CommonConstants.CLIENT_ID);
+    }
+
+    /**
+     * 获取token
+     *
+     * @param storeClientId
+     * @return
+     * @throws Exception
+     */
+    private String crefToken(String storeClientId) {
+        Object o = redisUtil.get(storeClientId + "_token");
         try {
-            if(o ==null) {
+            if (o == null) {
                 Long timestamp = System.currentTimeMillis();
                 String generateSignature = CerfTokenUtils.generateSignature(CommonConstants.CLIENT_ID, CommonConstants.CLIENT_SECRET, timestamp);
-    //            OkHttpClient client = HttpUtils.getUnsafeOkHttpClient();
-    //            MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
-    //            String parameter = "client_id=" + CommonConstants.CLIENT_ID + "&timestamp=" + timestamp + "&grant_type=client_credentials&client_secret_sign=" + generateSignature + "&type=SELF" + "&account_id=" + CommonConstants.ACCOUNT_ID;
-    //            RequestBody body = RequestBody.create(mediaType, parameter);
-    //            Request request = new Request.Builder()
-    //                    .url(CommonConstants.CREF_TOKEN_URL)
-    //                    .post(body)
-    //                    .build();
-                    JSONObject jsonObject = null;
-
-    //                Response response = client.newCall(request).execute();
-
-                    Map<String,Object> map = new HashMap<>();
-                    map.put("client_id",CommonConstants.CLIENT_ID);
-                    map.put("timestamp",timestamp);
-                    map.put("grant_type","client_credentials");
-                    map.put("client_secret_sign",generateSignature);
-                    map.put("type","SELF");
-                    map.put("account_id",CommonConstants.ACCOUNT_ID);
-                    Map<String,String> headers = new HashMap<>();
-                    headers.put("contentType","application/x-www-form-urlencoded;charset=utf-8");
-                    String response =  HttpUtils.postForm(CommonConstants.CREF_TOKEN_URL,map,headers,30000,30000);
-                    jsonObject = JSONObject.parseObject(response);
-                    log.info(">>>>crefToken response:{}",response);
+                JSONObject jsonObject = null;
+                Map<String, Object> map = new HashMap<>();
+                map.put("client_id", CommonConstants.CLIENT_ID);
+                map.put("timestamp", timestamp);
+                map.put("grant_type", "client_credentials");
+                map.put("client_secret_sign", generateSignature);
+                map.put("type", "SELF");
+                map.put("account_id", CommonConstants.ACCOUNT_ID);
+                Map<String, String> headers = new HashMap<>();
+                headers.put("contentType", "application/x-www-form-urlencoded;charset=utf-8");
+                String response = HttpUtils.postForm(CommonConstants.CREF_TOKEN_URL, map, headers, 30000, 30000);
+                jsonObject = JSONObject.parseObject(response);
+                log.info(">>>>获取店铺：{} token返回信息:{}",storeClientId, response);
                 if (jsonObject != null && jsonObject.containsKey("access_token")) {
-                    redisUtil.set(CommonConstants.CLIENT_ID+"_token",jsonObject.getString("access_token"),1500);
+                    redisUtil.set(CommonConstants.CLIENT_ID + "_token", jsonObject.getString("access_token"), 1500);
                     return jsonObject.getString("access_token");
                 }
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            log.info(">>>>>>>>获取店铺：{} token异常，error msg:{}",e);
         }
+        //log.info("店铺client_id:{},crefToken:{}", storeClientId,o);
         return (String) o;
     }
+
 }

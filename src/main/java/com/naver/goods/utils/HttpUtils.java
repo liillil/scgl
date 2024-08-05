@@ -57,12 +57,14 @@ import java.util.Set;
 @Slf4j
 public class HttpUtils {
     static CloseableHttpClient client = null;
+
     static {
         PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
         cm.setMaxTotal(128);
         cm.setDefaultMaxPerRoute(128);
         client = HttpClients.custom().setConnectionManager(cm).build();
     }
+
     public static OkHttpClient getUnsafeOkHttpClient() throws Exception {
         // 创建一个信任所有证书的TrustManager
         final TrustManager[] trustAllCerts = new TrustManager[]{
@@ -105,7 +107,7 @@ public class HttpUtils {
         return builder.build();
     }
 
-    public static String getForm(String url, Map<String, String> headers, Integer connTimeout, Integer readTimeout)throws ConnectTimeoutException,
+    public static String getForm(String url, Map<String, String> headers, Integer connTimeout, Integer readTimeout) throws ConnectTimeoutException,
             SocketTimeoutException, Exception {
         CloseableHttpClient client = null;
         HttpGet get = new HttpGet(url);
@@ -150,7 +152,7 @@ public class HttpUtils {
         return "";
     }
 
-    public static String putForm(String url, Map<String, Object> params, Map<String, String> headers, Integer connTimeout, Integer readTimeout)throws ConnectTimeoutException,
+    public static String putForm(String url, Map<String, Object> params, Map<String, String> headers, Integer connTimeout, Integer readTimeout) throws ConnectTimeoutException,
             SocketTimeoutException, Exception {
         CloseableHttpClient client = null;
         HttpPut put = new HttpPut(url);
@@ -159,7 +161,7 @@ public class HttpUtils {
                 List<BasicNameValuePair> formParams = new ArrayList<>();
                 Set<Map.Entry<String, Object>> entrySet = params.entrySet();
                 for (Map.Entry<String, Object> entry : entrySet) {
-                    formParams.add(new BasicNameValuePair(entry.getKey(), entry.getValue()+""));
+                    formParams.add(new BasicNameValuePair(entry.getKey(), entry.getValue() + ""));
                 }
                 UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formParams, Consts.UTF_8);
                 put.setEntity(entity);
@@ -212,7 +214,7 @@ public class HttpUtils {
                 List<BasicNameValuePair> formParams = new ArrayList<>();
                 Set<Map.Entry<String, Object>> entrySet = params.entrySet();
                 for (Map.Entry<String, Object> entry : entrySet) {
-                    formParams.add(new BasicNameValuePair(entry.getKey(), entry.getValue()+""));
+                    formParams.add(new BasicNameValuePair(entry.getKey(), entry.getValue() + ""));
                 }
                 UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formParams, Consts.UTF_8);
                 post.setEntity(entity);
@@ -255,7 +257,7 @@ public class HttpUtils {
         return "";
     }
 
-    private static void setMDC(HttpRequestBase requestBase){
+    private static void setMDC(HttpRequestBase requestBase) {
         if (MDC.getCopyOfContextMap() != null && MDC.getCopyOfContextMap().get("X-B3-TraceId") != null) {
             requestBase.setHeader("X-B3-TraceId", (String) MDC.getCopyOfContextMap().get("X-B3-TraceId"));
         }
@@ -269,13 +271,14 @@ public class HttpUtils {
 
     /**
      * 创建 SSL连接
+     *
      * @return
      * @throws GeneralSecurityException
      */
     private static CloseableHttpClient createSSLInsecureClient() throws GeneralSecurityException {
         try {
             SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, new TrustStrategy() {
-                public boolean isTrusted(X509Certificate[] chain,String authType) throws CertificateException {
+                public boolean isTrusted(X509Certificate[] chain, String authType) throws CertificateException {
                     return true;
                 }
             }).build();
@@ -379,10 +382,11 @@ public class HttpUtils {
             }
         };
 
-        sc.init(null, new TrustManager[] { trustManager }, null);
+        sc.init(null, new TrustManager[]{trustManager}, null);
         return sc;
     }
-    public static String httpPutWithJson(String url, String json, Map<String,String> headers, Integer connTimeout, Integer readTimeout) {
+
+    public static String httpPutWithJson(String url, String json, Map<String, String> headers, Integer connTimeout, Integer readTimeout) {
         String returnValue = "";
         CloseableHttpClient httpClient = null;
         ResponseHandler<String> responseHandler = new BasicResponseHandler();
@@ -405,15 +409,15 @@ public class HttpUtils {
             httpClient = HttpClients.createDefault();
 
             //第二步：创建httpPost对象
-            HttpPut httpPut= new HttpPut(url);
+            HttpPut httpPut = new HttpPut(url);
 
             //第三步：给httpPost设置JSON格式的参数
-            StringEntity requestEntity = new StringEntity(json,"utf-8");
+            StringEntity requestEntity = new StringEntity(json, "utf-8");
             requestEntity.setContentEncoding("UTF-8");
             httpPut.setHeader("Content-type", "application/json");
-            if (headers !=null && headers.size()>0){
-                for (String key:headers.keySet()){
-                    httpPut.setHeader(key,headers.get(key));
+            if (headers != null && headers.size() > 0) {
+                for (String key : headers.keySet()) {
+                    httpPut.setHeader(key, headers.get(key));
                 }
             }
             setMDC(httpPut);
@@ -429,15 +433,15 @@ public class HttpUtils {
             httpPut.setConfig(customReqConf.build());
 
             //第四步：发送HttpPost请求，获取返回值
-            returnValue = httpClient.execute(httpPut,responseHandler); //调接口获取返回值时，必须用此方法
-            log.info(">>> returnValue:{}",returnValue);
-        } catch(Exception e) {
+            returnValue = httpClient.execute(httpPut, responseHandler); //调接口获取返回值时，必须用此方法
+            log.info(">>> returnValue:{}", returnValue);
+        } catch (Exception e) {
             log.error("HttpPutWithJson error url" + url + ";Exception: " + e);
-        }finally {
+        } finally {
             try {
                 httpClient.close();
             } catch (IOException e) {
-                log.error("HttpPutWithJson close error",e);
+                log.error("HttpPutWithJson close error", e);
             }
         }
         //第五步：处理返回值
