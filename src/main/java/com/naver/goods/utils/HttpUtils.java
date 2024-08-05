@@ -139,6 +139,7 @@ public class HttpUtils {
             }
             return IOUtils.toString(res.getEntity().getContent(), "UTF-8");
         } catch (Exception e) {
+            log.error(">>>getForm error:{}", e);
         } finally {
             get.releaseConnection();
             if (url.startsWith("https") && client != null

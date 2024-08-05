@@ -46,7 +46,7 @@ public class GoodsInfoService {
             Map<String,String> headers = new HashMap<>();
             headers.put("Authorization","Bearer "+crefToken);
             goodsInfo = HttpUtils.getForm(productNoUrl,headers,30000,30000);
-            log.info(">>>>getGoodsInfoByGoodsNo response:{}",goodsInfo);
+//            log.info(">>>>getGoodsInfoByGoodsNo response:{}",goodsInfo);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
