@@ -21,11 +21,11 @@ public class SchedulingTaskService {
     @Autowired
     private GoodsInfoService goodsInfoService;
 
-    private static String shopName = "패션 핫이슈";
+    private static String storeName = "패션 핫이슈";
     /**
      * 定时比价
      */
-    @Scheduled(cron = "* 0/20 * * * *")
+    @Scheduled(cron = "* 0/10 * * * *")
 //    @Scheduled(cron = "*/5 * * * * ?")
     private void scheduledPriceParity() throws Exception {
         Map<String,String> map = new HashMap<>();
@@ -34,7 +34,7 @@ public class SchedulingTaskService {
         map.put("10683874474","41757465114");
         map.put("10683981714","47910304236");
         for (String key:map.keySet()) {
-            goodsInfoService.oprGoodsInfo(key, map.get(key), shopName);
+            goodsInfoService.oprGoodsInfo(key, map.get(key), storeName);
         }
     }
 

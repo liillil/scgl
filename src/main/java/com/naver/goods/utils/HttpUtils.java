@@ -346,7 +346,7 @@ public class HttpUtils {
 
     public static Document rawDataHomePage(String url) {
         try {
-            initUnSecureTSL();
+//            initUnSecureTSL();
             Document document = Jsoup.connect(url).get();
             return document;
         } catch (IOException e) {
@@ -381,7 +381,7 @@ public class HttpUtils {
         sc.init(null, new TrustManager[] { trustManager }, null);
         return sc;
     }
-    public static String httpPutWithJson(String url, String json,Map<String,String> headers, Integer connTimeout, Integer readTimeout) {
+    public static String httpPutWithJson(String url, String json, Map<String,String> headers, Integer connTimeout, Integer readTimeout) {
         String returnValue = "";
         CloseableHttpClient httpClient = null;
         ResponseHandler<String> responseHandler = new BasicResponseHandler();
@@ -431,7 +431,7 @@ public class HttpUtils {
             returnValue = httpClient.execute(httpPut,responseHandler); //调接口获取返回值时，必须用此方法
             log.info(">>> returnValue:{}",returnValue);
         } catch(Exception e) {
-            log.error("HttpPutWithJson error url" + url+ ";请求参数: " + json + ";Exception: " + e);
+            log.error("HttpPutWithJson error url" + url + ";Exception: " + e);
         }finally {
             try {
                 httpClient.close();
