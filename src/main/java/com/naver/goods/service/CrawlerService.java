@@ -24,18 +24,18 @@ public class CrawlerService {
             if (comStoreNameElement != null) {
                 String comStoreName = comStoreNameElement.text();
                 crawlerGoodsInfo.setComStoreName(comStoreName);
-                System.out.println("比价店铺名称: " + comStoreName);
+                log.info("比价店铺名称: {},比价id:{}",comStoreName,comGoodsId);
             } else {
-                System.out.println("未找到店铺名称");
+                log.info("未找到店铺名称");
             }
             if (priceElement != null) {
                 String price = priceElement.text();
                 if(StringUtils.isNotEmpty(price)) {
                     crawlerGoodsInfo.setPrice(Integer.valueOf(price.replace(",","")));
-                    System.out.println("商品价格: " + price);
+                    log.info("商品价格: {}", price);
                 }
             } else {
-                System.out.println("未找到商品价格");
+                log.info("未找到商品价格");
             }
         } catch (Exception e) {
 //            e.printStackTrace();

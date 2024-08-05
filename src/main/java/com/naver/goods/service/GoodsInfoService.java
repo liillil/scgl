@@ -123,7 +123,7 @@ public class GoodsInfoService {
             headers.put("Authorization","Bearer "+crefToken);
 //            Response response = client.newCall(request).execute();
             String resp = HttpUtils.httpPutWithJson(productUrl,updateParams, headers,300000, 300000);
-//            log.info(">>>>更新价格返回：{}，goodsNo:{}",resp,goodsNo);
+            log.info(">>>>更新价格返回：{}，商品id:{}",resp,goodsNo);
 
         } catch (Exception e) {
            log.error(">>>>updateGoodsInfo error msg:{}",e);
