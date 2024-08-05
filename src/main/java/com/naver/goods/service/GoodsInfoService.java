@@ -79,7 +79,7 @@ public class GoodsInfoService {
                 } else {
                     updateDiscountPrice = goodsPrice - diffPrice - 10;
                 }
-
+                log.info("比价折扣后价格:{}", updateDiscountPrice);
                 // 使用Jackson的ObjectMapper解析JSON字符串
                 ObjectMapper mapper = new ObjectMapper();
                 JsonNode jsonNode;
