@@ -1,4 +1,4 @@
-package com.naver.goods.entity;
+package com.naver.goods.dto;
 
 import lombok.Data;
 

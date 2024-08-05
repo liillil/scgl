@@ -22,7 +22,7 @@ spring:
         max-active: 20
   datasource:
     username: root
-    password: 123456
+    password: ',Yu/tqye<7hr'
     #?serverTimezone=UTC解决时区的报错
     url: jdbc:mysql://127.0.0.1:3306/naver_store?serverTimezone=UTC&useUnicode=true&characterEncoding=utf-8
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -33,3 +33,6 @@ logback:
   logdir: D:\\java\\log\\
   maxHistory: 7
   level: INFO
+server:
+  servlet:
+    context-path: /never-goods

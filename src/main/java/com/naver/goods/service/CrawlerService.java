@@ -1,12 +1,10 @@
 package com.naver.goods.service;
 
 import com.naver.goods.common.CommonConstants;
-import com.naver.goods.entity.CrawlerGoodsInfo;
+import com.naver.goods.dto.CrawlerGoodsInfo;
 import com.naver.goods.utils.HttpUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.jsoup.Jsoup;
-import org.jsoup.internal.StringUtil;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.springframework.stereotype.Service;

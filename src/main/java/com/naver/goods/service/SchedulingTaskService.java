@@ -25,7 +25,7 @@ public class SchedulingTaskService {
     /**
      * 定时比价
      */
-    @Scheduled(cron = "* 0/10 * * * *")
+    @Scheduled(cron = "* 0/50 * * * *")
     private void scheduledPriceParity() throws Exception {
         Map<String, String> map = new HashMap<>();
         map.put("10574690710", "47446055679");

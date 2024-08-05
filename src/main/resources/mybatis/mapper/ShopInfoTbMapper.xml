@@ -4,5 +4,10 @@
     <resultMap id="resultMap" type="com.naver.goods.entity.ShopInfoTb">
         <id column="id" property="id" />
         <result column="shop_name" property="shopName"/>
+        <result column="client_id" property="clientId"/>
+        <result column="client_secret" property="clientSecret"/>
+        <result column="account_id" property="accountId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="compare_prices" property="comparePrices"/>
     </resultMap>
 </mapper>
