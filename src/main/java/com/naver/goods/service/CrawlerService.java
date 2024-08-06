@@ -26,6 +26,7 @@ public class CrawlerService {
             Elements comStoreNameElements = document.getElementsByClass(CommonConstants.CRAW_GOODS_NAME_LABEL);
 
             if (comStoreNameElements != null) {
+                log.info("比价id:{}, 比价店铺名称获取元素size", comGoodsId, comStoreNameElements.size());
                 Element comStoreNameElement;
                 if (comStoreNameElements.size() > 1){
                     comStoreNameElement = comStoreNameElements.get(1);
@@ -48,7 +49,7 @@ public class CrawlerService {
                 log.info("未找到比价店铺商品价格");
             }
         } catch (Exception e) {
-            log.info(">>>>>爬取页面商品价格最低店铺名称和金额异常，error msg:{}",e);
+            log.info(">>>>>爬取页面商品价格最低店铺名称和金额异常，error msg:{}, 比价id：{}",e, comGoodsId);
             return null;
         }
         return crawlerGoodsInfo;

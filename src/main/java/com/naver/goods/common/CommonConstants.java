@@ -12,16 +12,16 @@ public class CommonConstants {
     public final static String CRAW_GOODS_NAME_LABEL = "lowestPrice_cell__IidBV";
 
     //应用程序ID
-    public final static String CLIENT_ID = "3ICGqNkccycxo03ZmNlqSq";
+//    public final static String CLIENT_ID = "3ICGqNkccycxo03ZmNlqSq";
 
     //应用程序密码
-    public final static String CLIENT_SECRET = "$2a$04$7AlAmymm.uQ0rMapw2jFAu";
+//    public final static String CLIENT_SECRET = "$2a$04$7AlAmymm.uQ0rMapw2jFAu";
 
     //认证令牌请求链接
     public final static String CREF_TOKEN_URL = "https://api.commerce.naver.com/external/v1/oauth2/token";
 
     //账户ID
-    public final static String ACCOUNT_ID = "ncp_1owpob_01";
+//    public final static String ACCOUNT_ID = "ncp_1owpob_01";
 
     //产品维护
     public final static String PRODUCT_URL = "https://api.commerce.naver.com/external/v2/products/channel-products/";

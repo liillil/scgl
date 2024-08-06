@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.naver.goods.mapper.StoreInfoMapper">
+    <resultMap id="resultMap" type="com.naver.goods.entity.StoreInfo">
+        <id column="id" property="id"/>
+        <result column="store_no" property="storeNo"/>
+        <result column="store_name" property="storeName"/>
+        <result column="client_id" property="clientId"/>
+        <result column="client_secret" property="clientSecret"/>
+        <result column="account_id" property="accountId"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="updated_time" property="updatedTime"/>
+    </resultMap>
+    
+<!--    <select id="getGoodsComPriceInfo" resultType="com.naver.goods.dto.GoodsComPriceInfo" >-->
+<!--        select-->
+<!--            si.store_name storeName,-->
+<!--            si.client_id clientId,-->
+<!--            si.client_secret clientSecret,-->
+<!--            si.account_id accountId,-->
+<!--            gi.goods_no goodsNo-->
+<!--            from store_info si-->
+<!--            left join goods_info gi on si.store_no = gi.store_no-->
+<!--    </select>-->
+</mapper>
