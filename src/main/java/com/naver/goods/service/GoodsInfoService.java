@@ -85,11 +85,6 @@ public class GoodsInfoService {
                 JSONObject productJson = gooodInfoJson.getJSONObject("originProduct");
                 Integer goodsPrice = productJson.getInteger("salePrice");
 
-                Integer goodsLimitPrice = comPriceInfo.getGoodsLimitPrice();
-                if (goodsLimitPrice != null && goodsPrice < goodsLimitPrice){
-                    return;
-                }
-
                 JSONObject customerBenefitJson = productJson.getJSONObject("customerBenefit");
                 JSONObject discountPolicyJson = customerBenefitJson.getJSONObject("immediateDiscountPolicy");
                 JSONObject discountMethodJson = discountPolicyJson.getJSONObject("discountMethod");
@@ -101,6 +96,11 @@ public class GoodsInfoService {
                     return;
                 }
                 if (StringUtils.equals(crawlerGoodsInfo.getComStoreName(), comPriceInfo.getStoreName())) {
+                    return;
+                }
+
+                Integer goodsLimitPrice = comPriceInfo.getGoodsLimitPrice();
+                if (goodsLimitPrice != null && crawlerGoodsInfo.getPrice() < goodsLimitPrice){
                     return;
                 }
 
