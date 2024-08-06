@@ -75,6 +75,9 @@ public class GoodsInfoService {
                 Integer goodsDiscountPrice = goodsPrice - discountPrice;
 
                 CrawlerGoodsInfo crawlerGoodsInfo = crawlerService.crawlerGoodsInfo(comGoodsId);
+                if (crawlerGoodsInfo == null){
+                    return;
+                }
                 if (StringUtils.equals(crawlerGoodsInfo.getComStoreName(), storeName)) {
                     return;
                 }
@@ -149,7 +152,7 @@ public class GoodsInfoService {
             if (o == null) {
                 Long timestamp = System.currentTimeMillis();
                 String generateSignature = CerfTokenUtils.generateSignature(CommonConstants.CLIENT_ID, CommonConstants.CLIENT_SECRET, timestamp);
-                JSONObject jsonObject = null;
+                JSONObject jsonObject;
                 Map<String, Object> map = new HashMap<>();
                 map.put("client_id", CommonConstants.CLIENT_ID);
                 map.put("timestamp", timestamp);
@@ -170,7 +173,6 @@ public class GoodsInfoService {
         } catch (Exception e) {
             log.info(">>>>>>>>获取店铺：{} token异常，error msg:{}",e);
         }
-        //log.info("店铺client_id:{},crefToken:{}", storeClientId,o);
         return (String) o;
     }
 
