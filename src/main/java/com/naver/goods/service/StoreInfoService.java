@@ -7,6 +7,7 @@ import com.naver.goods.dto.InfoResults;
 import com.naver.goods.dto.GoodsComPriceInfo;
 import com.naver.goods.entity.GoodsInfo;
 import com.naver.goods.entity.StoreInfo;
+import com.naver.goods.mapper.GoodsInfoMapper;
 import com.naver.goods.mapper.StoreInfoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,9 @@ public class StoreInfoService {
     @Autowired
     private StoreInfoMapper storeInfoMapper;
 
+    @Autowired
+    private GoodsInfoMapper goodsInfoMapper;
+
     public InfoResult findAllShop(){
         QueryWrapper<StoreInfo> wrapper = new QueryWrapper<>();
         List<StoreInfo> list = storeInfoMapper.selectList(wrapper);
@@ -35,10 +39,9 @@ public class StoreInfoService {
 
     public List<GoodsComPriceInfo> getGoodsComPriceInfo(){
         MPJLambdaWrapper<GoodsComPriceInfo> mapMPJLambdaWrapper = new MPJLambdaWrapper<>();
-        mapMPJLambdaWrapper.select(StoreInfo::getStoreName,StoreInfo::getClientId,
-                StoreInfo::getClientSecret, StoreInfo::getAccountId)
-                .select(GoodsInfo::getGoodsNo, GoodsInfo::getComStoreId, GoodsInfo::getGoodsLimitPrice)
-                .leftJoin(GoodsInfo.class, GoodsInfo::getStoreNo, StoreInfo::getStoreNo);
-        return storeInfoMapper.selectJoinList(GoodsComPriceInfo.class, mapMPJLambdaWrapper);
+        mapMPJLambdaWrapper.select(GoodsInfo::getGoodsNo, GoodsInfo::getComStoreId, GoodsInfo::getGoodsLimitPrice)
+                .select(StoreInfo::getStoreName,StoreInfo::getClientId, StoreInfo::getClientSecret, StoreInfo::getAccountId)
+                .leftJoin(StoreInfo.class, StoreInfo::getStoreNo, GoodsInfo::getStoreNo);
+        return goodsInfoMapper.selectJoinList(GoodsComPriceInfo.class, mapMPJLambdaWrapper);
     }
 }
