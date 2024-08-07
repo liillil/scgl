@@ -4,10 +4,16 @@ import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import com.naver.goods.common.CommonConstants;
 import com.naver.goods.config.RedisUtil;
 import com.naver.goods.dto.CrawlerGoodsInfo;
 import com.naver.goods.dto.GoodsComPriceInfo;
+import com.naver.goods.entity.GoodsComException;
+import com.naver.goods.entity.GoodsInfo;
+import com.naver.goods.entity.StoreInfo;
+import com.naver.goods.mapper.GoodsComExceptionMapper;
+import com.naver.goods.mapper.GoodsInfoMapper;
 import com.naver.goods.utils.CerfTokenUtils;
 import com.naver.goods.utils.HttpUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -15,8 +21,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -28,10 +36,13 @@ public class GoodsInfoService {
     @Autowired
     private CrawlerService crawlerService;
 
+    @Autowired
+    private GoodsInfoMapper goodsInfoMapper;
+
     /**
      * 查询商品信息
      *
-     * @param goodsNo 商品id
+     * @param comPriceInfo 比价商品信息
      * @return
      * @throws Exception
      */
@@ -40,13 +51,19 @@ public class GoodsInfoService {
         if (StringUtils.isBlank(crefToken)) {
             return null;
         }
-        String goodsInfo = null;
+        String goodsInfo;
         try {
             String productNoUrl = CommonConstants.PRODUCT_URL + comPriceInfo.getGoodsNo();
             Map<String, String> headers = new HashMap<>();
             headers.put("Authorization", "Bearer " + crefToken);
             goodsInfo = HttpUtils.getForm(productNoUrl, headers, 30000, 30000);
         } catch (IOException e) {
+            log.error(">>>> 查询商品信息异常，error msg:{}, 商品id:{}", e, comPriceInfo.getGoodsNo());
+            GoodsComException goodsComException = new GoodsComException();
+            goodsComException.setGoodsNo(comPriceInfo.getGoodsNo());
+            goodsComException.setComStoreId(comPriceInfo.getComStoreId());
+            goodsComException.setExceptionMsg("比价价格请以10元为单位");
+            crawlerService.saveGoodsComException(goodsComException);
             throw new RuntimeException(e);
         }
         return goodsInfo;
@@ -71,9 +88,10 @@ public class GoodsInfoService {
     /**
      * 比较并修改商品至最低价格
      *
-     * @param goodsNo    商品id
-     * @param comGoodsId 比价id
-     * @param storeName  店铺名称
+     * @param comPriceInfo
+//     * @param goodsNo    商品id
+//     * @param comGoodsId 比价id
+//     * @param storeName  店铺名称
      * @throws Exception
      */
     public void oprGoodsInfo(GoodsComPriceInfo comPriceInfo) throws Exception {
@@ -91,7 +109,7 @@ public class GoodsInfoService {
                 Integer discountPrice = discountMethodJson.getInteger("value");
                 Integer goodsDiscountPrice = goodsPrice - discountPrice;
 
-                CrawlerGoodsInfo crawlerGoodsInfo = crawlerService.crawlerGoodsInfo(comPriceInfo.getComStoreId());
+                CrawlerGoodsInfo crawlerGoodsInfo = crawlerService.crawlerGoodsInfo(comPriceInfo);
                 if (crawlerGoodsInfo == null){
                     return;
                 }
@@ -111,7 +129,7 @@ public class GoodsInfoService {
                 } else {
                     updateDiscountPrice = goodsPrice - diffPrice - 10;
                 }
-                log.info("比价折扣后价格:{}", updateDiscountPrice);
+                log.info(">>>> 商品id:{}, 比价折扣后价格:{}", comPriceInfo.getGoodsNo(), updateDiscountPrice);
 
                 // 使用Jackson的ObjectMapper解析JSON字符串
                 ObjectMapper mapper = new ObjectMapper();
@@ -126,7 +144,7 @@ public class GoodsInfoService {
                 this.updateGoodsInfo(comPriceInfo, goodsInfo);
             }
         } catch (Exception e) {
-            log.error(">>>>比较并修改商品至最低价格异常，error msg:{}", e);
+            log.error(">>>> 比较并修改商品至最低价格异常，error msg:{}, 商品id:{}", e, comPriceInfo.getGoodsNo());
         }
     }
 //    public void oprGoodsInfo(String goodsNo, String comGoodsId, String storeName) throws Exception {
@@ -179,7 +197,7 @@ public class GoodsInfoService {
     /**
      * 更新商品价格
      *
-     * @param goodsNo      商品id
+     * @param comPriceInfo 比价商品信息
      * @param updateParams 商品详情
      * @throws Exception
      */
@@ -188,14 +206,15 @@ public class GoodsInfoService {
         if (StringUtils.isBlank(crefToken)) {
             return;
         }
+//        log.info("商品id:{}, 参数:{}", comPriceInfo.getGoodsNo(), updateParams);
         String productUrl = CommonConstants.PRODUCT_URL + comPriceInfo.getGoodsNo();
         try {
             Map<String, String> headers = new HashMap<>();
             headers.put("Authorization", "Bearer " + crefToken);
             String resp = HttpUtils.httpPutWithJson(productUrl, updateParams, headers, 300000, 300000);
-            log.info(">>>>更新价格返回：{}，商品id:{}", resp, comPriceInfo.getGoodsNo());
+            log.info(">>>> 更新价格返回：{}，商品id:{}", resp, comPriceInfo.getGoodsNo());
         } catch (Exception e) {
-            log.error(">>>>更新商品价格异常，error msg:{}", e);
+            log.error(">>>> 更新商品价格异常，error msg:{}", e);
         }
     }
 //    private void updateGoodsInfo(String goodsNo, String updateParams) throws Exception {
@@ -227,7 +246,7 @@ public class GoodsInfoService {
     /**
      * 获取token
      *
-     * @param storeClientId
+     * @param comPriceInfo
      * @return
      * @throws Exception
      */
@@ -249,14 +268,14 @@ public class GoodsInfoService {
                 headers.put("contentType", "application/x-www-form-urlencoded;charset=utf-8");
                 String response = HttpUtils.postForm(CommonConstants.CREF_TOKEN_URL, map, headers, 30000, 30000);
                 jsonObject = JSONObject.parseObject(response);
-                log.info(">>>>获取店铺：{} token返回信息:{}",comPriceInfo.getClientId(), response);
+                log.info(">>>>获取店铺：{} token返回信息:{}", comPriceInfo.getClientId(), response);
                 if (jsonObject != null && jsonObject.containsKey("access_token")) {
                     redisUtil.set(comPriceInfo.getClientId() + "_token", jsonObject.getString("access_token"), 1500);
                     return jsonObject.getString("access_token");
                 }
             }
         } catch (Exception e) {
-            log.info(">>>>>>>>获取店铺：{} token异常，error msg:{}",e);
+            log.info(">>>> 获取店铺：{} token异常，error msg:{}",e);
         }
         return (String) o;
     }
@@ -290,4 +309,11 @@ public class GoodsInfoService {
 //        return (String) o;
 //    }
 
+    public List<GoodsComPriceInfo> getGoodsComPriceInfo(){
+        MPJLambdaWrapper<GoodsComPriceInfo> mapMPJLambdaWrapper = new MPJLambdaWrapper<>();
+        mapMPJLambdaWrapper.select(GoodsInfo::getGoodsNo, GoodsInfo::getComStoreId, GoodsInfo::getGoodsLimitPrice)
+                .select(StoreInfo::getStoreName,StoreInfo::getClientId, StoreInfo::getClientSecret, StoreInfo::getAccountId)
+                .leftJoin(StoreInfo.class, StoreInfo::getStoreNo, GoodsInfo::getStoreNo);
+        return goodsInfoMapper.selectJoinList(GoodsComPriceInfo.class, mapMPJLambdaWrapper);
+    }
 }

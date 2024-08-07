@@ -26,9 +26,4 @@ public class StoreInfoContorller {
     public InfoResult findAll() {
         return storeInfoService.findAllShop();
     }
-
-    @GetMapping("/getGoodsComPriceInfo")
-    public InfoResult getGoodsComPriceInfo() {
-        return InfoResults.ok(storeInfoService.getGoodsComPriceInfo());
-    }
 }

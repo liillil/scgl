@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS`goods_info` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键 自增',
   `store_no` varchar(50) NOT NULL COMMENT '店铺编号',
   `goods_no` varchar(50) NOT NULL COMMENT '商品编号',
+  `com_store_id` varchar(50) NOT NULL COMMENT '比价店铺id',
   `goods_limit_price` bigint DEFAULT NULL COMMENT '商品比价限制价格',
   `created_time` TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_time` TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
@@ -23,4 +24,13 @@ CREATE TABLE IF NOT EXISTS`goods_info` (
   UNIQUE (`goods_no`)
 ) COMMENT '商品信息' ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-	
+CREATE TABLE IF NOT EXISTS`goods_com_exception` (
+    `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键 自增',
+    `goods_no` varchar(50) NOT NULL COMMENT '商品编号',
+    `com_store_id` varchar(50) NOT NULL COMMENT '比价店铺id',
+    `exception_msg` text DEFAULT NULL COMMENT '异常信息',
+    `created_time` TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `updated_time` TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (`id`)
+) COMMENT '商品比价异常信息' ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+

@@ -28,8 +28,6 @@ public class StoreInfoService {
     @Autowired
     private StoreInfoMapper storeInfoMapper;
 
-    @Autowired
-    private GoodsInfoMapper goodsInfoMapper;
 
     public InfoResult findAllShop(){
         QueryWrapper<StoreInfo> wrapper = new QueryWrapper<>();
@@ -37,11 +35,4 @@ public class StoreInfoService {
         return InfoResults.ok(list);
     }
 
-    public List<GoodsComPriceInfo> getGoodsComPriceInfo(){
-        MPJLambdaWrapper<GoodsComPriceInfo> mapMPJLambdaWrapper = new MPJLambdaWrapper<>();
-        mapMPJLambdaWrapper.select(GoodsInfo::getGoodsNo, GoodsInfo::getComStoreId, GoodsInfo::getGoodsLimitPrice)
-                .select(StoreInfo::getStoreName,StoreInfo::getClientId, StoreInfo::getClientSecret, StoreInfo::getAccountId)
-                .leftJoin(StoreInfo.class, StoreInfo::getStoreNo, GoodsInfo::getStoreNo);
-        return goodsInfoMapper.selectJoinList(GoodsComPriceInfo.class, mapMPJLambdaWrapper);
-    }
 }
