@@ -59,11 +59,6 @@ public class GoodsInfoService {
             goodsInfo = HttpUtils.getForm(productNoUrl, headers, 30000, 30000);
         } catch (IOException e) {
             log.error(">>>> 查询商品信息异常，error msg:{}, 商品id:{}", e, comPriceInfo.getGoodsNo());
-            GoodsComException goodsComException = new GoodsComException();
-            goodsComException.setGoodsNo(comPriceInfo.getGoodsNo());
-            goodsComException.setComStoreId(comPriceInfo.getComStoreId());
-            goodsComException.setExceptionMsg("比价价格请以10元为单位");
-            crawlerService.saveGoodsComException(goodsComException);
             throw new RuntimeException(e);
         }
         return goodsInfo;
@@ -214,6 +209,11 @@ public class GoodsInfoService {
             String resp = HttpUtils.httpPutWithJson(productUrl, updateParams, headers, 300000, 300000);
             log.info(">>>> 更新价格返回：{}，商品id:{}", resp, comPriceInfo.getGoodsNo());
         } catch (Exception e) {
+            GoodsComException goodsComException = new GoodsComException();
+            goodsComException.setGoodsNo(comPriceInfo.getGoodsNo());
+            goodsComException.setComStoreId(comPriceInfo.getComStoreId());
+            goodsComException.setExceptionMsg("比价价格请以10元为单位");
+            crawlerService.saveGoodsComException(goodsComException);
             log.error(">>>> 更新商品价格异常，error msg:{}", e);
         }
     }

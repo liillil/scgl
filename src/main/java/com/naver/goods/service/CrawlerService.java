@@ -36,7 +36,6 @@ public class CrawlerService {
             Elements comStoreNameElements = document.getElementsByClass(CommonConstants.CRAW_GOODS_NAME_LABEL);
 
             if (comStoreNameElements != null) {
-                log.info(">>>> 商品id:{}, 比价id:{}, 比价店铺名称获取元素size", comPriceInfo.getGoodsNo(), comPriceInfo.getComStoreId(), comStoreNameElements.size());
                 Element comStoreNameElement;
                 if (comStoreNameElements.size() > 1){
                     comStoreNameElement = comStoreNameElements.get(1);
