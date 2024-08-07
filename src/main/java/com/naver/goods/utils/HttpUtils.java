@@ -1,6 +1,7 @@
 package com.naver.goods.utils;
 
 import com.alibaba.fastjson.JSONObject;
+import com.naver.goods.entity.GoodsComException;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 import org.apache.commons.httpclient.ConnectTimeoutException;
@@ -386,7 +387,7 @@ public class HttpUtils {
         return sc;
     }
 
-    public static String httpPutWithJson(String url, String json, Map<String, String> headers, Integer connTimeout, Integer readTimeout) {
+    public static String httpPutWithJson(String url, String json, Map<String, String> headers, Integer connTimeout, Integer readTimeout) throws Exception{
         String returnValue = "";
         CloseableHttpClient httpClient = null;
         ResponseHandler<String> responseHandler = new BasicResponseHandler();
@@ -437,11 +438,12 @@ public class HttpUtils {
 //            log.info(">>> returnValue:{}", returnValue);
         } catch (Exception e) {
             log.error("HttpPutWithJson error url" + url + ";Exception: " + e);
+            throw e;
         } finally {
             try {
                 httpClient.close();
-            } catch (IOException e) {
-                log.error("HttpPutWithJson close error", e);
+            } catch (IOException ioException) {
+                log.error("HttpPutWithJson close error", ioException);
             }
         }
         //第五步：处理返回值

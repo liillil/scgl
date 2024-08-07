@@ -196,7 +196,7 @@ public class GoodsInfoService {
      * @param updateParams 商品详情
      * @throws Exception
      */
-    private void updateGoodsInfo(GoodsComPriceInfo comPriceInfo, String updateParams) throws Exception {
+    private void updateGoodsInfo(GoodsComPriceInfo comPriceInfo, String updateParams) {
         String crefToken = crefToken(comPriceInfo);
         if (StringUtils.isBlank(crefToken)) {
             return;
