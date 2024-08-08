@@ -29,6 +29,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
+import org.eclipse.jetty.client.HttpProxy;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -38,6 +39,8 @@ import org.apache.http.client.config.RequestConfig.Builder;
 
 import javax.net.ssl.*;
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.net.SocketTimeoutException;
 import java.security.GeneralSecurityException;
 import java.security.KeyManagementException;
@@ -348,11 +351,12 @@ public class HttpUtils {
         }
     }
 
-
     public static Document rawDataHomePage(String url) {
         try {
 //            initUnSecureTSL();
-            Document document = Jsoup.connect(url).get();
+            Document document = Jsoup.connect(url)
+//                    .proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress("14.29.233.12", 8093)))
+                    .get();
             return document;
         } catch (IOException e) {
             e.printStackTrace();
