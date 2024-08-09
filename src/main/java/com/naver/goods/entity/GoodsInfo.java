@@ -37,6 +37,9 @@ public class GoodsInfo {
     @Column(name = "goods_limit_price")
     private Integer goodsLimitPrice;
 
+    @Column(name = "cookie")
+    private String cookie;
+
     @Column(name = "created_time")
     private Date createdTime;
 

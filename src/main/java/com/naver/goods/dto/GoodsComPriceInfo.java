@@ -18,4 +18,6 @@ public class GoodsComPriceInfo {
     private String comStoreId;
 
     private Integer goodsLimitPrice;
+
+    private String cookie;
 }

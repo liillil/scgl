@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import com.naver.goods.common.CommonConstants;
+import com.naver.goods.config.JedisConfig;
 import com.naver.goods.config.RedisUtil;
 import com.naver.goods.dto.CrawlerGoodsInfo;
 import com.naver.goods.dto.GoodsComPriceInfo;
@@ -19,7 +20,11 @@ import com.naver.goods.utils.HttpUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+import redis.clients.jedis.Jedis;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
@@ -105,6 +110,7 @@ public class GoodsInfoService {
                 Integer goodsDiscountPrice = goodsPrice - discountPrice;
 
                 CrawlerGoodsInfo crawlerGoodsInfo = crawlerService.crawlerGoodsInfo(comPriceInfo);
+//                CrawlerGoodsInfo crawlerGoodsInfo = crawlerService.webDriverCrawlerGoodsInfo(comPriceInfo);
                 if (crawlerGoodsInfo == null){
                     return;
                 }
@@ -310,10 +316,21 @@ public class GoodsInfoService {
 //    }
 
     public List<GoodsComPriceInfo> getGoodsComPriceInfo(){
+        String sort = (String) redisUtil.get("sort");
         MPJLambdaWrapper<GoodsComPriceInfo> mapMPJLambdaWrapper = new MPJLambdaWrapper<>();
-        mapMPJLambdaWrapper.select(GoodsInfo::getGoodsNo, GoodsInfo::getComStoreId, GoodsInfo::getGoodsLimitPrice)
-                .select(StoreInfo::getStoreName,StoreInfo::getClientId, StoreInfo::getClientSecret, StoreInfo::getAccountId)
-                .leftJoin(StoreInfo.class, StoreInfo::getStoreNo, GoodsInfo::getStoreNo);
+        if (StringUtils.equals(sort, "asc")){
+            mapMPJLambdaWrapper.select(GoodsInfo::getGoodsNo, GoodsInfo::getComStoreId, GoodsInfo::getGoodsLimitPrice, GoodsInfo::getCookie)
+                    .select(StoreInfo::getStoreName,StoreInfo::getClientId, StoreInfo::getClientSecret, StoreInfo::getAccountId)
+                    .leftJoin(StoreInfo.class, StoreInfo::getStoreNo, GoodsInfo::getStoreNo)
+                    .orderByAsc(GoodsInfo::getId);
+            redisUtil.set("sort", "desc");
+        }else {
+            mapMPJLambdaWrapper.select(GoodsInfo::getGoodsNo, GoodsInfo::getComStoreId, GoodsInfo::getGoodsLimitPrice, GoodsInfo::getCookie)
+                    .select(StoreInfo::getStoreName,StoreInfo::getClientId, StoreInfo::getClientSecret, StoreInfo::getAccountId)
+                    .leftJoin(StoreInfo.class, StoreInfo::getStoreNo, GoodsInfo::getStoreNo)
+                    .orderByDesc(GoodsInfo::getId);
+            redisUtil.set("sort", "asc");
+        }
         return goodsInfoMapper.selectJoinList(GoodsComPriceInfo.class, mapMPJLambdaWrapper);
     }
 }

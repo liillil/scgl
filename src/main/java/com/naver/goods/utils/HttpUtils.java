@@ -29,7 +29,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
-import org.eclipse.jetty.client.HttpProxy;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -47,10 +46,7 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @ClassName: HttpUtils
@@ -351,11 +347,19 @@ public class HttpUtils {
         }
     }
 
-    public static Document rawDataHomePage(String url) {
+    public static Document rawDataHomePage(String url, String cookie) {
         try {
+            // 创建一个Cookie map
+            Map<String, String> cookies = new HashMap<>();
+            cookies.put("sus_val", cookie);
 //            initUnSecureTSL();
+            // 设置代理服务器的IP地址和端口
+//            System.setProperty("http.proxyHost", "114.229.217.150");
+//            System.setProperty("http.proxyPort", "30320");
+//            Connection connection = Jsoup.connect(url);
             Document document = Jsoup.connect(url)
-//                    .proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress("14.29.233.12", 8093)))
+                    .cookies(cookies)
+                    .timeout(10000)
                     .get();
             return document;
         } catch (IOException e) {

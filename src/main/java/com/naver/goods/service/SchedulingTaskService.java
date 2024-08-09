@@ -26,8 +26,8 @@ public class SchedulingTaskService {
     /**
      * 定时比价
      */
-    @Scheduled(cron = "* 0/25 * * * *")
-//    @Scheduled(cron = "*/5 * * * * ?")
+    @Scheduled(cron = "* 0/20 * * * *")
+//    @Scheduled(cron = "*/20 * * * * ?")
     private void scheduledPriceParity() throws Exception {
         List<GoodsComPriceInfo> goodsComPriceInfoList = goodsInfoService.getGoodsComPriceInfo();
         if (CollectionUtils.isEmpty(goodsComPriceInfoList) || goodsComPriceInfoList.size() == 0){
@@ -36,13 +36,13 @@ public class SchedulingTaskService {
         log.info(">>>> goodsComPriceInfoList:{}", goodsComPriceInfoList);
         for (GoodsComPriceInfo comPriceInfo : goodsComPriceInfoList){
             goodsInfoService.oprGoodsInfo(comPriceInfo);
-            try {
-                Thread.sleep(10000); // 休眠10秒
-            } catch (InterruptedException e) {
-                log.error(">>>> sleep error:{}", e);
-                // 处理中断异常
-                Thread.currentThread().interrupt(); // 清除中断状态
-            }
+//            try {
+//                Thread.sleep(20000); // 休眠20秒
+//            } catch (InterruptedException e) {
+//                log.error(">>>> sleep error:{}", e);
+//                // 处理中断异常
+//                Thread.currentThread().interrupt(); // 清除中断状态
+//            }
         }
     }
 
