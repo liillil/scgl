@@ -36,13 +36,13 @@ public class SchedulingTaskService {
         log.info(">>>> goodsComPriceInfoList:{}", goodsComPriceInfoList);
         for (GoodsComPriceInfo comPriceInfo : goodsComPriceInfoList){
             goodsInfoService.oprGoodsInfo(comPriceInfo);
-//            try {
-//                Thread.sleep(20000); // 休眠20秒
-//            } catch (InterruptedException e) {
-//                log.error(">>>> sleep error:{}", e);
-//                // 处理中断异常
-//                Thread.currentThread().interrupt(); // 清除中断状态
-//            }
+            try {
+                Thread.sleep(5000); // 休眠5秒
+            } catch (InterruptedException e) {
+                log.error(">>>> sleep error:{}", e);
+                // 处理中断异常
+                Thread.currentThread().interrupt(); // 清除中断状态
+            }
         }
     }
 

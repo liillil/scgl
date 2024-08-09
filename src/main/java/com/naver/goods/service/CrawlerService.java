@@ -32,6 +32,7 @@ public class CrawlerService {
         try {
 
             String crawUrl = CommonConstants.CRAW_URL + comPriceInfo.getComStoreId();
+            log.info(">>>> 商品id:{}, 比价id:{}, cookie: {}", comPriceInfo.getGoodsNo(), comPriceInfo.getComStoreId(), comPriceInfo.getCookie());
             Document document = HttpUtils.rawDataHomePage(crawUrl, comPriceInfo.getCookie());
             Element priceElement = document.getElementsByClass(CommonConstants.CRAW_PRICE_LABEL).first();
             Elements comStoreNameElements = document.getElementsByClass(CommonConstants.CRAW_GOODS_NAME_LABEL);
