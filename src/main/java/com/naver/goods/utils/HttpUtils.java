@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 import org.apache.commons.httpclient.ConnectTimeoutException;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Consts;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ResponseHandler;
@@ -38,9 +39,7 @@ import org.apache.http.client.config.RequestConfig.Builder;
 
 import javax.net.ssl.*;
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.net.SocketTimeoutException;
+import java.net.*;
 import java.security.GeneralSecurityException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -351,6 +350,11 @@ public class HttpUtils {
         try {
             // 创建一个Cookie map
             Map<String, String> cookies = new HashMap<>();
+//            String cookie = getCookie(url);
+//            if (cookie == null){
+//                return null;
+//            }
+//            log.info(">>>> rawDataHomePage cookie:{}", cookie);
             cookies.put("sus_val", cookie);
 //            initUnSecureTSL();
             // 设置代理服务器的IP地址和端口
@@ -359,6 +363,7 @@ public class HttpUtils {
 //            Connection connection = Jsoup.connect(url);
             Document document = Jsoup.connect(url)
                     .cookies(cookies)
+                    .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36")
                     .timeout(10000)
                     .get();
             return document;
@@ -457,4 +462,36 @@ public class HttpUtils {
         //第五步：处理返回值
         return returnValue;
     }
+
+    public static String getCookie(String pageHtmlUrl){
+        String cookie = null;
+        try {
+            URL url = new URL(pageHtmlUrl);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            // 发送请求
+            connection.connect();
+
+            // 获取所有响应头字段
+            Map<String, List<String>> headers = connection.getHeaderFields();
+            // 查找Set-Cookie头部字段
+            List<String> cookiesHeader = headers.get("set-cookie");
+
+            if (cookiesHeader != null) {
+                String cookieStr = cookiesHeader.get(0);
+                cookie = cookieStr.substring(8,32);
+            }
+
+            connection.disconnect();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return cookie;
+    }
+
+//    public static void main(String[] args) {
+//        for (int i =0; i < 100; i++){
+//            String cookie = getCookie("https://search.shopping.naver.com/catalog/49443221753");
+//            System.out.println(cookie);}
+//    }
 }

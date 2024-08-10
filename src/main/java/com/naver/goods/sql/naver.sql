@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS`goods_info` (
   `goods_no` varchar(50) NOT NULL COMMENT '商品编号',
   `com_store_id` varchar(50) NOT NULL COMMENT '比价店铺id',
   `goods_limit_price` bigint DEFAULT NULL COMMENT '商品比价限制价格',
-  `cookie` varchar(50) NOT NULL COMMENT 'cookie',
+  `cookie` varchar(50) DEFAULT NULL COMMENT 'cookie',
   `created_time` TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_time` TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`),
