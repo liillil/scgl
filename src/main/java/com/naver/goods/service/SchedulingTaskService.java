@@ -29,6 +29,7 @@ public class SchedulingTaskService {
     @Scheduled(cron = "* 0/30 * * * *")
 //    @Scheduled(cron = "*/20 * * * * ?")
     private void scheduledPriceParity() throws Exception {
+        long startTime = System.currentTimeMillis();
         List<GoodsComPriceInfo> goodsComPriceInfoList = goodsInfoService.getGoodsComPriceInfo();
         if (CollectionUtils.isEmpty(goodsComPriceInfoList) || goodsComPriceInfoList.size() == 0){
             return;
@@ -44,6 +45,9 @@ public class SchedulingTaskService {
                 Thread.currentThread().interrupt(); // 清除中断状态
             }
         }
+        long endTime = System.currentTimeMillis();
+        long executionTime = endTime - startTime;
+        log.info("scheduledTask execution time:{}", executionTime / 60000);
     }
 
 }
