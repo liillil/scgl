@@ -61,7 +61,7 @@ public class GoodsInfoService {
             String productNoUrl = CommonConstants.PRODUCT_URL + comPriceInfo.getGoodsNo();
             Map<String, String> headers = new HashMap<>();
             headers.put("Authorization", "Bearer " + crefToken);
-            goodsInfo = HttpUtils.getForm(productNoUrl, headers, 30000, 30000);
+            goodsInfo = HttpUtils.getForm(productNoUrl, headers, 10000, 10000);
         } catch (IOException e) {
             log.error(">>>> 查询商品信息异常，error msg:{}, 商品id:{}", e, comPriceInfo.getGoodsNo());
             throw new RuntimeException(e);
@@ -212,7 +212,7 @@ public class GoodsInfoService {
         try {
             Map<String, String> headers = new HashMap<>();
             headers.put("Authorization", "Bearer " + crefToken);
-            String resp = HttpUtils.httpPutWithJson(productUrl, updateParams, headers, 300000, 300000);
+            String resp = HttpUtils.httpPutWithJson(productUrl, updateParams, headers, 100000, 100000);
             log.info(">>>> 更新价格返回：{}，商品id:{}", resp, comPriceInfo.getGoodsNo());
         } catch (Exception e) {
             GoodsComException goodsComException = new GoodsComException();
