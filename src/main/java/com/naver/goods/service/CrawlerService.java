@@ -32,8 +32,9 @@ public class CrawlerService {
         try {
 
             String crawUrl = CommonConstants.CRAW_URL + comPriceInfo.getComStoreId();
-            log.info(">>>> 商品id:{}, 比价id:{}, cookie: {}", comPriceInfo.getGoodsNo(), comPriceInfo.getComStoreId(), comPriceInfo.getCookie());
-            Document document = HttpUtils.rawDataHomePage(crawUrl, comPriceInfo.getCookie());
+//            log.info(">>>> 商品id:{}, 比价id:{}, cookie: {}", comPriceInfo.getGoodsNo(), comPriceInfo.getComStoreId(), comPriceInfo.getCookie());
+//            Document document = HttpUtils.rawDataHomePage(crawUrl, comPriceInfo.getCookie());
+            Document document = HttpUtils.rawDataHomePage(crawUrl);
             if (document == null){
                 return null;
             }

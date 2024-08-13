@@ -55,6 +55,7 @@ import java.util.*;
  */
 @Slf4j
 public class HttpUtils {
+    public static final int INT = 2;
     static CloseableHttpClient client = null;
 
     static {
@@ -346,31 +347,42 @@ public class HttpUtils {
         }
     }
 
-    public static Document rawDataHomePage(String url, String cookie) {
+    public static Document rawDataHomePage(String url) {
         try {
             // 创建一个Cookie map
             Map<String, String> cookies = new HashMap<>();
-//            String cookie = getCookie(url);
-//            if (cookie == null){
-//                return null;
-//            }
-//            log.info(">>>> rawDataHomePage cookie:{}", cookie);
+            String cookie = getCookie(url);
+            if (cookie == null){
+                return null;
+            }
+            log.info(">>>> rawDataHomePage cookie:{}", cookie);
             cookies.put("sus_val", cookie);
 //            initUnSecureTSL();
-            // 设置代理服务器的IP地址和端口
-//            System.setProperty("http.proxyHost", "114.229.217.150");
-//            System.setProperty("http.proxyPort", "30320");
-//            Connection connection = Jsoup.connect(url);
+            // 设置代理
             Document document = Jsoup.connect(url)
+//                    .proxy("115.223.31.56", 36247)
                     .cookies(cookies)
-                    .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36")
-                    .timeout(10000)
+//                    .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2486.0 Safari/537.36 Edge/13.10586")
+                    .userAgent(UserAgent.getUserAgentWindows())
+                    .timeout(5000)
                     .get();
+            dealy();
             return document;
         } catch (IOException e) {
             e.printStackTrace();
+            dealy();
         }
         return null;
+    }
+
+    public static void dealy(){
+        try {
+            Thread.sleep(10000); // 休眠10秒
+        } catch (InterruptedException e) {
+            log.error(">>>> sleep error:{}", e);
+            // 处理中断异常
+            Thread.currentThread().interrupt(); // 清除中断状态
+        }
     }
 
     public static SSLContext createIgnoreVerifySSL() throws NoSuchAlgorithmException, KeyManagementException {
@@ -490,8 +502,8 @@ public class HttpUtils {
     }
 
 //    public static void main(String[] args) {
-//        for (int i =0; i < 100; i++){
-//            String cookie = getCookie("https://search.shopping.naver.com/catalog/49443221753");
+//        for (int i =0; i < 20; i++){
+//            String cookie = getCookie("https://search.shopping.naver.com/catalog/48360697767");
 //            System.out.println(cookie);}
 //    }
 }

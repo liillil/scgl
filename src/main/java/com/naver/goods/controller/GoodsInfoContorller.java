@@ -35,13 +35,13 @@ public class GoodsInfoContorller {
         log.info(">>>> goodsComPriceInfoList:{}", goodsComPriceInfoList);
         for (GoodsComPriceInfo comPriceInfo : goodsComPriceInfoList){
             goodsInfoService.oprGoodsInfo(comPriceInfo);
-            try {
-                Thread.sleep(2000); // 休眠2秒
-            } catch (InterruptedException e) {
-                log.error(">>>> sleep error:{}", e);
-                // 处理中断异常
-                Thread.currentThread().interrupt(); // 清除中断状态
-            }
+//            try {
+//                Thread.sleep(11000); // 休眠11秒
+//            } catch (InterruptedException e) {
+//                log.error(">>>> sleep error:{}", e);
+//                // 处理中断异常
+//                Thread.currentThread().interrupt(); // 清除中断状态
+//            }
         }
     }
 }

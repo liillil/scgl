@@ -316,21 +316,25 @@ public class GoodsInfoService {
 //    }
 
     public List<GoodsComPriceInfo> getGoodsComPriceInfo(){
-        String sort = (String) redisUtil.get("sort");
+//        String sort = (String) redisUtil.get("sort");
         MPJLambdaWrapper<GoodsComPriceInfo> mapMPJLambdaWrapper = new MPJLambdaWrapper<>();
-        if (StringUtils.equals(sort, "asc")){
-            mapMPJLambdaWrapper.select(GoodsInfo::getGoodsNo, GoodsInfo::getComStoreId, GoodsInfo::getGoodsLimitPrice, GoodsInfo::getCookie)
-                    .select(StoreInfo::getStoreName,StoreInfo::getClientId, StoreInfo::getClientSecret, StoreInfo::getAccountId)
-                    .leftJoin(StoreInfo.class, StoreInfo::getStoreNo, GoodsInfo::getStoreNo)
-                    .orderByAsc(GoodsInfo::getId);
-            redisUtil.set("sort", "desc");
-        }else {
-            mapMPJLambdaWrapper.select(GoodsInfo::getGoodsNo, GoodsInfo::getComStoreId, GoodsInfo::getGoodsLimitPrice, GoodsInfo::getCookie)
-                    .select(StoreInfo::getStoreName,StoreInfo::getClientId, StoreInfo::getClientSecret, StoreInfo::getAccountId)
-                    .leftJoin(StoreInfo.class, StoreInfo::getStoreNo, GoodsInfo::getStoreNo)
-                    .orderByDesc(GoodsInfo::getId);
-            redisUtil.set("sort", "asc");
-        }
+//        if (StringUtils.equals(sort, "asc")){
+//            mapMPJLambdaWrapper.select(GoodsInfo::getGoodsNo, GoodsInfo::getComStoreId, GoodsInfo::getGoodsLimitPrice, GoodsInfo::getCookie)
+//                    .select(StoreInfo::getStoreName,StoreInfo::getClientId, StoreInfo::getClientSecret, StoreInfo::getAccountId)
+//                    .leftJoin(StoreInfo.class, StoreInfo::getStoreNo, GoodsInfo::getStoreNo)
+//                    .orderByAsc(GoodsInfo::getId);
+//            redisUtil.set("sort", "desc");
+//        }else {
+//            mapMPJLambdaWrapper.select(GoodsInfo::getGoodsNo, GoodsInfo::getComStoreId, GoodsInfo::getGoodsLimitPrice, GoodsInfo::getCookie)
+//                    .select(StoreInfo::getStoreName,StoreInfo::getClientId, StoreInfo::getClientSecret, StoreInfo::getAccountId)
+//                    .leftJoin(StoreInfo.class, StoreInfo::getStoreNo, GoodsInfo::getStoreNo)
+//                    .orderByDesc(GoodsInfo::getId);
+//            redisUtil.set("sort", "asc");
+//        }
+        mapMPJLambdaWrapper.select(GoodsInfo::getGoodsNo, GoodsInfo::getComStoreId, GoodsInfo::getGoodsLimitPrice, GoodsInfo::getCookie)
+                .select(StoreInfo::getStoreName,StoreInfo::getClientId, StoreInfo::getClientSecret, StoreInfo::getAccountId)
+                .leftJoin(StoreInfo.class, StoreInfo::getStoreNo, GoodsInfo::getStoreNo)
+                .orderByAsc(GoodsInfo::getId);
         return goodsInfoMapper.selectJoinList(GoodsComPriceInfo.class, mapMPJLambdaWrapper);
     }
 }
