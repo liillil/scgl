@@ -26,7 +26,7 @@ public class SchedulingTaskService {
     /**
      * 定时比价
      */
-    @Scheduled(cron = "* 0/40 * * * *")
+    @Scheduled(cron = "* 0/30 * * * *")
 //    @Scheduled(cron = "*/20 * * * * ?")
     private void scheduledPriceParity() throws Exception {
         long startTime = System.currentTimeMillis();

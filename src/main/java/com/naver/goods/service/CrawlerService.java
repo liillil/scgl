@@ -63,7 +63,7 @@ public class CrawlerService {
                 log.info(">>>> 未找到比价店铺商品价格: 商品id:{}, 比价id:{}", comPriceInfo.getGoodsNo(), comPriceInfo.getComStoreId());
             }
         } catch (Exception e) {
-            log.info(">>>>>爬取页面商品价格最低店铺名称和金额异常，error msg:{}, 商品id:{}, 比价id:{}",e, comPriceInfo.getGoodsNo(), comPriceInfo.getComStoreId());
+            log.error(">>>>>爬取页面商品价格最低店铺名称和金额异常，error msg:{}, 商品id:{}, 比价id:{}",e, comPriceInfo.getGoodsNo(), comPriceInfo.getComStoreId());
             GoodsComException goodsComException = new GoodsComException();
             goodsComException.setGoodsNo(comPriceInfo.getGoodsNo());
             goodsComException.setComStoreId(comPriceInfo.getComStoreId());
