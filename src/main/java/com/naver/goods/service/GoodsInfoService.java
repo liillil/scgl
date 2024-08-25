@@ -114,23 +114,44 @@ public class GoodsInfoService {
                 if (crawlerGoodsInfo == null){
                     return;
                 }
-                if (StringUtils.equals(crawlerGoodsInfo.getComStoreName(), comPriceInfo.getStoreName())) {
-                    return;
-                }
-
                 Integer goodsLimitPrice = comPriceInfo.getGoodsLimitPrice();
                 if (goodsLimitPrice != null && crawlerGoodsInfo.getPrice() < goodsLimitPrice){
                     return;
                 }
-
-                Integer updateDiscountPrice;
-                Integer diffPrice = goodsDiscountPrice - crawlerGoodsInfo.getPrice();
-                if (diffPrice == 0) {
-                    updateDiscountPrice = goodsPrice - 10;
-                } else {
-                    updateDiscountPrice = goodsPrice - diffPrice - 10;
+                Integer updatePrice;
+                if (StringUtils.equals(crawlerGoodsInfo.getComStoreName(), comPriceInfo.getStoreName())) {
+                    Integer thPrice = crawlerGoodsInfo.getThPrice();
+                    if (thPrice == null){
+                        return;
+                    }
+                    Integer diffPrice = thPrice - goodsDiscountPrice;
+                    if (diffPrice <= 10){
+                        return;
+                    }
+                    Integer miuThPrice;
+                    Integer remThPrice = thPrice % 10;
+                    if (remThPrice == 0){
+                        miuThPrice = diffPrice - 10;
+                    }else {
+                        miuThPrice = diffPrice - remThPrice;
+                    }
+                    updatePrice = goodsPrice + miuThPrice;
+                }else {
+                    Integer price = crawlerGoodsInfo.getPrice();
+                    Integer diffPrice = goodsDiscountPrice - price;
+                    if (diffPrice == 0) {
+                        updatePrice = goodsPrice - 10;
+                    } else {
+                        Integer remPrice = price % 10;
+                        if (remPrice == 0){
+                            updatePrice = goodsPrice - diffPrice - 10;
+                        }else {
+                            updatePrice = goodsPrice - diffPrice - remPrice;
+                        }
+                    }
                 }
-                log.info(">>>> 商品id:{}, 比价折扣后价格:{}", comPriceInfo.getGoodsNo(), updateDiscountPrice);
+
+                log.info(">>>> 商品id:{}, 比价折扣后价格:{}", comPriceInfo.getGoodsNo(), updatePrice);
 
                 // 使用Jackson的ObjectMapper解析JSON字符串
                 ObjectMapper mapper = new ObjectMapper();
@@ -139,7 +160,7 @@ public class GoodsInfoService {
                 JsonNode outerNode = jsonNode.path("originProduct");
                 if (outerNode.isObject()) {
                     ObjectNode objectNode = (ObjectNode) outerNode;
-                    objectNode.put("salePrice", updateDiscountPrice); // 修改嵌套对象的值
+                    objectNode.put("salePrice", updatePrice); // 修改嵌套对象的值
                     goodsInfo = mapper.writeValueAsString(jsonNode);
                 }
                 this.updateGoodsInfo(comPriceInfo, goodsInfo);

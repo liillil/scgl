@@ -11,6 +11,10 @@ public class CommonConstants {
     //爬虫比价商品名称标签
     public final static String CRAW_GOODS_NAME_LABEL = "lowestPrice_cell__IidBV";
 
+    public final static String CRAW_RANK_TABLE_LABEL = "productByMall_list_seller__yNhgM productByMall_price_blue__wqrME";
+
+    public final static String CRAW_TH_PRICE_LABEL = "productByMall_price__MjaUK";
+
     //应用程序ID
 //    public final static String CLIENT_ID = "3ICGqNkccycxo03ZmNlqSq";
 

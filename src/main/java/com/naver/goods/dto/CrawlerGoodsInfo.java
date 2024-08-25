@@ -8,4 +8,6 @@ public class CrawlerGoodsInfo {
     private Integer price;
 
     private String comStoreName;
+
+    private Integer thPrice;
 }

@@ -33,6 +33,8 @@ import org.apache.http.message.BasicNameValuePair;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.slf4j.MDC;
 import org.apache.http.client.config.RequestConfig.Builder;
 
@@ -150,6 +152,27 @@ public class HttpUtils {
             }
         }
         return "";
+    }
+
+
+
+    public static void main(String[] args) {
+        String url = "https://search.shopping.naver.com/catalog/45998936736";
+        Map<String,String> headers = BrowserHeader.chrome127Header(url);
+        try {
+            String htmlStr = getForm(url, headers, 10000, 10000);
+            Document document = Jsoup.parse(htmlStr);
+            Elements tables = document.getElementsByClass("productByMall_list_seller__yNhgM productByMall_price_blue__wqrME");
+            for (Element table : tables) {
+                Elements rows = table.select("tr");
+                Element row1 = rows.get(2);
+                Element element = row1.getElementsByClass("productByMall_price__MjaUK").get(0);
+                String text = element.select("em").first().text();
+                System.out.println(text);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static String putForm(String url, Map<String, Object> params, Map<String, String> headers, Integer connTimeout, Integer readTimeout) throws ConnectTimeoutException,
@@ -482,6 +505,7 @@ public class HttpUtils {
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             // 发送请求
+//            connection.setRequestProperty("User-agent", UserAgent.getUserAgentWindows());
             connection.connect();
 
             // 获取所有响应头字段

@@ -26,7 +26,7 @@ public class SchedulingTaskService {
     /**
      * 定时比价
      */
-    @Scheduled(cron = "* 0/30 * * * *")
+    @Scheduled(cron = "* 0/15 * * * *")
 //    @Scheduled(cron = "*/20 * * * * ?")
     private void scheduledPriceParity() throws Exception {
         long startTime = System.currentTimeMillis();
@@ -37,13 +37,6 @@ public class SchedulingTaskService {
         log.info(">>>> goodsComPriceInfoList:{}", goodsComPriceInfoList);
         for (GoodsComPriceInfo comPriceInfo : goodsComPriceInfoList){
             goodsInfoService.oprGoodsInfo(comPriceInfo);
-//            try {
-//                Thread.sleep(12000); // 休眠10秒
-//            } catch (InterruptedException e) {
-//                log.error(">>>> sleep error:{}", e);
-//                // 处理中断异常
-//                Thread.currentThread().interrupt(); // 清除中断状态
-//            }
         }
         long endTime = System.currentTimeMillis();
         long executionTime = endTime - startTime;
